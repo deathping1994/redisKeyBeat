@@ -13,7 +13,4 @@ install:
   - go get github.com/garyburd/redigo/redis
   - go get github.com/stretchr/testify/assert
 
-script: make testsuite
-
-after_success:
-  - test -f build/coverage/full.cov && bash <(curl -s https://codecov.io/bash) -f build/coverage/full.cov
+script: make unit-tests

@@ -5,6 +5,12 @@
 
 RedisKeybeat is an extension of RedisBeat - the Beat used for Redis monitoring. RedisKeyBeat adds the ability to query keys from redis and publish them as events periodically.It has retained the features offered by RedisBeat, so it also does everything the original RedisBeat did.
 
+## Use Case 
+- It is useful if you use redis as central data store for vital stats of other services
+- If you have cron jobs running that collect data from logs and store them into redis
+- If you want to visualize data stored in redis (Like customer activity and behavior)
+
+
 
 ## Elasticsearch template
 

@@ -4,6 +4,8 @@
 
 RedisKeybeat is an extension of RedisBeat - the Beat used for Redis monitoring. RedisKeyBeat adds the ability to query keys from redis and publish them as events periodically.It has retained the features offered by RedisBeat, so it also does everything the original RedisBeat did.
 
+## Note: This extension has a dependency on version 1.1 of libbeat so make sure you switch your branch to correct version once the libbeat has been cloned by `go get`
+
 ## Use Case 
 - It is useful if you use redis as central data store for vital stats of other services
 - If you have cron jobs running that collect data from logs and store them into redis

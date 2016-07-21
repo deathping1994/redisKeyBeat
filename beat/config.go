@@ -21,7 +21,8 @@ const (
 	DEFAULT_STATS_CLUSTER      bool          = true
 	DEFAULT_REDIS_BEAT_CACHE_KEY string      = "redisBeatCacheKey"
 	DEFAULT_STATS_KEYSPACE     bool          = true
-	DEFAULT_KEY_PATTERN_LIMIT  int   = 10
+	DEFAULT_KEY_PATTERN_LIMIT  int   		 = 10
+	DEFAULT_CACHE_EXPIRY_TIME  int           = 300
 )
 
 var DEFAULT_KEY_PATTERN = []string {"admin*"}
@@ -39,6 +40,7 @@ type RedisConfig struct {
 	}
 	RedisBeatCacheKey *string `yaml:"redis_beat_cache_key"`
 	KeyPatternLimit *int `yaml:"key_pattern_limit"`
+	CacheExpiryTime *int `yaml:"cache_expiry_time"`
 	Stats struct {
 			  Server       *bool `yaml:"server"`
 		Clients      *bool `yaml:"clients"`

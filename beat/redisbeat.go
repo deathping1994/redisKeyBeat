@@ -13,7 +13,6 @@ import (
     "github.com/elastic/beats/libbeat/logp"
     "github.com/elastic/beats/libbeat/publisher"
     "github.com/garyburd/redigo/redis"
-    "fmt"
 )
 
 type Redisbeat struct {
@@ -40,6 +39,7 @@ type Redisbeat struct {
     keyPattern       []string
     keyPatternLimit  int
     redisBeatCacheKey string
+    cacheExpiryTime  int
 
     redisPool        *redis.Pool
     done             chan struct{}
@@ -172,6 +172,11 @@ func (rb *Redisbeat) Config(b *beat.Beat) error {
     }else{
        rb.keyPatternLimit = DEFAULT_KEY_PATTERN_LIMIT
     }
+    if rb.RbConfig.Input.CacheExpiryTime !=nil {
+        rb.cacheExpiryTime = *rb.RbConfig.Input.CacheExpiryTime
+    }else{
+        rb.cacheExpiryTime = DEFAULT_CACHE_EXPIRY_TIME
+    }
 
     logp.Debug("redisbeat", "Init redisbeat")
     logp.Debug("redisbeat", "Period %v\n", rb.period)
@@ -190,9 +195,10 @@ func (rb *Redisbeat) Config(b *beat.Beat) error {
     logp.Debug("redisbeat", "Command statistics %t\n", rb.commandStats)
     logp.Debug("redisbeat", "Cluster statistics %t\n", rb.clusterStats)
     logp.Debug("redisbeat", "Keyspace statistics %t\n", rb.keyspaceStats)
-    logp.Debug("redisbeat", "KeyPatterns to be fetched %t\n", rb.keyPattern)
-    logp.Debug("redisbeat", "Cache Key set to %t\n", rb.redisBeatCacheKey)
-    logp.Debug("redisbeat", "Key Pattern Limit set to %t\n", rb.keyPatternLimit)
+    logp.Debug("redisbeat", "KeyPatterns to be fetched %v\n", rb.keyPattern)
+    logp.Debug("redisbeat", "Cache Key set to %v\n",rb.redisBeatCacheKey)
+    logp.Debug("redisbeat", "Key Pattern Limit set to %v\n", rb.keyPatternLimit)
+    logp.Debug("redisbeat", "Key Pattern Limit set to %v\n", rb.cacheExpiryTime)
     return nil
 }
 
@@ -371,12 +377,10 @@ func (r *Redisbeat) getInfoReply(infoType string) (map[string]string, error) {
 func keysCacheExist(r *Redisbeat) bool{
     c := r.redisPool.Get()
     defer c.Close()
-    fmt.Println(r.redisBeatCacheKey)
     res, err := redis.Bool(c.Do("EXISTS", r.redisBeatCacheKey))
     if err != nil {
         logp.Debug("error while checking the existance of key cache", err.Error())
     }
-    fmt.Println("response from kkeys exist",res)
     return res
 }
 
@@ -397,7 +401,6 @@ func (r *Redisbeat) generateKeysCache() {
                 }
             }
     }
-    fmt.Println("printing key typemap",keyTypeMap)
     r.cacheKeyPatterns(keyTypeMap)
     keyslist := []interface{}{"gaurav","das","das"}
     r.setCacheKey(r.redisBeatCacheKey,keyslist)
@@ -420,7 +423,7 @@ func (r *Redisbeat) setCacheKey(key string, value []interface{}){
     if er != nil {
         logp.Err("Could not add cache key %v",key,er.Error())
     } else {
-        res,err := redis.Bool(c.Do("EXPIRE",append([]interface{}{key},300)...))
+        res,err := redis.Bool(c.Do("EXPIRE",append([]interface{}{key},r.cacheExpiryTime)...))
         if err != nil || res ==false{
             logp.Err("Could not set Expire time on key %v",key,err.Error())
         }
@@ -489,7 +492,6 @@ func (r *Redisbeat) exportHashKeys() error{
 func (r *Redisbeat) getAndPublishHashKeys(keyslist []string) (map[string]interface{}) {
     c := r.redisPool.Get()
     defer c.Close()
-    fmt.Println(keyslist)
     for _,key := range keyslist{
         values, err := redis.StringMap(c.Do("hgetall",key))
         if err != nil {
@@ -516,7 +518,6 @@ func (r *Redisbeat) publishHashKey(eventMap map[string]string) error{
 func (r *Redisbeat) getListKeys(keyslist []string) (map[string]interface{}) {
     c := r.redisPool.Get()
     defer c.Close()
-    fmt.Println(keyslist)
     strMap := make(map[string]interface{})
     for _,key := range keyslist{
         values, err := redis.Strings(c.Do("LRANGE",key, 0, -1))
@@ -545,7 +546,6 @@ func (r *Redisbeat) exportListKeys() error{
 }
 
 func (r *Redisbeat) exportKeys() error {
-    fmt.Println("before cache keys exist")
     if keysCacheExist(r) == false {
         r.generateKeysCache()
     }
@@ -558,7 +558,6 @@ func (r *Redisbeat) exportKeys() error {
 func (r *Redisbeat) getStringKeys(keyslist []string) (map[string]interface{}) {
     c := r.redisPool.Get()
     defer c.Close()
-    fmt.Println(keyslist)
     var args []interface{}
     for _,key := range keyslist{
         args = append(args,key)

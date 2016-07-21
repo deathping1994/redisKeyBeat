@@ -38,6 +38,7 @@ func TestDefaultConfig(t *testing.T) {
 	assert.Equal(t, DEFAULT_STATS_COMMAND, rb.commandStats, "Default command stats should be %v", DEFAULT_STATS_COMMAND)
 	assert.Equal(t, DEFAULT_STATS_CLUSTER, rb.clusterStats, "Default cluster stats should be %v", DEFAULT_STATS_CLUSTER)
 	assert.Equal(t, DEFAULT_STATS_KEYSPACE, rb.keyspaceStats, "Default keyspace stats should be %v", DEFAULT_STATS_KEYSPACE)
+	assert.Equal(t, DEFAULT_CACHE_EXPIRY_TIME, rb.cacheExpiryTime, "Default keyspace stats should be %v", DEFAULT_CACHE_EXPIRY_TIME)
 }
 
 func TestModifiedConfig(t *testing.T) {
@@ -68,6 +69,7 @@ func TestModifiedConfig(t *testing.T) {
 	assert.Equal(t, false, rb.keyspaceStats, "Configured keyspace stats should be %v", false)
 	assert.Equal(t, 10, rb.keyPatternLimit, "Configured key_pattern_limit should be %v", 10)
 	assert.Equal(t, "redisBeatCacheKey", rb.redisBeatCacheKey, "Configured redis_beat_cache_key should be %v", "redisBeatCacheKey")
+	assert.Equal(t, DEFAULT_CACHE_EXPIRY_TIME, rb.cacheExpiryTime, "Default keyspace stats should be %v", DEFAULT_CACHE_EXPIRY_TIME)
 }
 
 func TestConvertReplyToMap(t *testing.T) {

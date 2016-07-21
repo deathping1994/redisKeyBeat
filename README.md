@@ -37,7 +37,7 @@ GOPATH=<your go path> make testsuite
 
 RedisKeyBeat supports `LIST`, `HASH` and `STRING` keys from redis, it takes a pattern and exports all the keys matching the pattern.
 
-### Sample event from `LIST` key (All the string keys are grouped togather and exported in single event)
+### Sample event from `LIST` key (All the string keys are grouped together and exported in single event)
 
 ```
 {
@@ -98,7 +98,7 @@ RedisKeyBeat supports `LIST`, `HASH` and `STRING` keys from redis, it takes a pa
   ]
 }
 ```
-### Sample events from `STRING` keys (All the string keys are grouped togather and exported in single event)
+### Sample events from `STRING` keys (All the string keys are grouped together and exported in single event)
 
 ```
 {

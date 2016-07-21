@@ -23,8 +23,10 @@ input:
     #required: true
     # default is empty string
     #required_pass: "p@ssw0rd"
-  # Key pattern cache time limit
+  # How many keys matching the pattern will be exported
   key_pattern_limit: 10
+  # Cache time for keys matching the pattern
+  cache_expiry_time: 300
   redis_beat_cache_key: "redisBeatCacheKey"
   # Statistics to collect (all enabled by default)
   stats:
